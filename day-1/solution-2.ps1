@@ -1,10 +1,5 @@
 $PuzzleInput = Get-Content $PSScriptRoot/input.txt
 
-$patterns = @(
-    'one','two','three','four','five','six','seven','eight','nine'
-    '1','2','3','4','5','6','7','8','9'
-)
-
 function stringToNum {
     param(
         [Parameter(Mandatory=$true)]
@@ -12,16 +7,16 @@ function stringToNum {
     )
 
     switch($str) {
-        'one'   { Return [int]1 }
-        'two'   { Return [int]2 }
-        'three' { Return [int]3 }
-        'four'  { Return [int]4 }
-        'five'  { Return [int]5 }
-        'six'   { Return [int]6 }
-        'seven' { Return [int]7 }
-        'eight' { Return [int]8 }
-        'nine'  { Return [int]9 }
-        Default { Return [int]$str }
+        'one'   { Return '1' }
+        'two'   { Return '2' }
+        'three' { Return '3' }
+        'four'  { Return '4' }
+        'five'  { Return '5' }
+        'six'   { Return '6' }
+        'seven' { Return '7' }
+        'eight' { Return '8' }
+        'nine'  { Return '9' }
+        Default { Return $str }
     }
 }
 
@@ -30,6 +25,11 @@ function resolveLine {
         [Parameter(Mandatory=$true)]
         [string]$line 
     )
+
+    $patterns = @(
+        'one','two','three','four','five','six','seven','eight','nine'
+        '1','2','3','4','5','6','7','8','9'
+    )
     
     $lineMatches = @()
     foreach ($pattern in $patterns) {
@@ -37,21 +37,25 @@ function resolveLine {
     }
     
     $sortedMatches = $lineMatches | Sort-Object Index
-    
-    if ($VerbosePreference) { $sortedMatches | Format-Table }
-
     $first = [string]$sortedMatches[0].Value
     $last  = [string]$sortedMatches[$sortedMatches.Length - 1].Value
 
-    "Adding $first and $last..."
-
-    Return (stringToNum -str $first) + (stringToNum -str $last)
+    Return [PSCustomObject]@{
+        Line = $line
+        Action = "Adding $first and $last..."
+        Result = (stringToNum -str $first) + (stringToNum -str $last)
+        SotredMatches = $sortedMatches
+    }
+    
 }
 
 $total = 0
+$infoList = @()
 $PuzzleInput | ForEach-Object {
-    $result = resolveLine -line $_
-    $total += $result[1]
+    $info = resolveLine -line $_ -Verbose
+    $infoList += $info
+    $total += [int]$info.Result
 }
 
+$infoList | Format-Table -AutoSize
 $total
