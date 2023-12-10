@@ -1,6 +1,6 @@
 $PuzzleInput = Get-Content $PSScriptRoot/input.txt
 
-function stringToNum {
+function Get-ResolvedNumber {
     param(
         [Parameter(Mandatory=$true)]
         [string]$str
@@ -20,7 +20,7 @@ function stringToNum {
     }
 }
 
-function resolveLine {
+function Get-ResolvedLine {
     param(
         [Parameter(Mandatory=$true)]
         [string]$line 
@@ -37,25 +37,28 @@ function resolveLine {
     }
     
     $sortedMatches = $lineMatches | Sort-Object Index
+    
     $first = [string]$sortedMatches[0].Value
     $last  = [string]$sortedMatches[$sortedMatches.Length - 1].Value
 
     Return [PSCustomObject]@{
         Line = $line
-        Action = "Adding $first and $last..."
-        Result = (stringToNum -str $first) + (stringToNum -str $last)
+        Action = "Choosing $first and $last..."
+        Result = (Get-ResolvedNumber -str $first) + (Get-ResolvedNumber -str $last)
         SotredMatches = $sortedMatches
     }
-    
 }
 
 $total = 0
 $infoList = @()
+
 $PuzzleInput | ForEach-Object {
-    $info = resolveLine -line $_ -Verbose
+    $info = Get-ResolvedLine -line $_ -Verbose
     $infoList += $info
     $total += [int]$info.Result
 }
 
-$infoList | Format-Table -AutoSize
+if ($VerbosePreference) {
+    $infoList | Format-Table -AutoSize
+}
 $total
