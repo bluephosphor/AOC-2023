@@ -17,12 +17,25 @@ function Get-ParsedLineData {
             [PSCustomObject]@{
                 Color = $cubeAttributes[2]
                 Quantity = $cubeAttributes[1]
-                Set = $i
+                Set = $i + 1
                 Game = $gameNumber
             }
         }
     }
     Return
+}
+
+function Get-ResolvedGame {
+    param (
+        [Parameter(Mandatory=$true)]
+        [PSCustomObject[]]$gameData,
+        [Parameter(Mandatory=$true)]
+        [int]$RedLimit,
+        [Parameter(Mandatory=$true)]
+        [int]$GreenLimit,
+        [Parameter(Mandatory=$true)]
+        [int]$BlueLimit
+    )
 }
 
 $PuzzleInput | ForEach-Object {
